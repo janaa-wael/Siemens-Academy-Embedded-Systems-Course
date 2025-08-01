@@ -169,22 +169,44 @@
 
 ![image-20250801153651347](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801153651347.png)
 
+During Transmission:
+
 - PduR: Protocol Data Unit Router
 - CAN by default supports PDUs up to 8 bytes.
+
 - CanTp: CAN transport protocol, does segmentation of PDUs & is responsible for the reassembly of the PDUs.
 - SWC talks through standardized API to RTE.
 - RTE translates this to signal and forwards it to COM.
 - COM sends PDU to PduR. It has a routing table and sends the PDU to CanTp which is responsible for segmentation and assembles the PDUs into PDUs with maximum size of 8 bytes, then sends them to PduR
 - PduR sends them to CanIf
 
+During Receiving:
+
+- MCU receives the PDUs and forwards them to the CanDriver which forwards them to CanIf
+- CanIf sends them to CanTp which segments the PDUs & unpacks them again.
+
 AUTOSAR Workflow:
 ![image-20250801154534392](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801154534392.png)
 
+- OEM develops the ECU extract and network architecture.
+
+  ![image-20250801171000217](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801171000217.png)
+
+- 
+
 - In some cases, OEMs communicate directly with Tier 2 companies & not implement the application layer by themselves.
+
 - Tier 1: develops the application layer and the ECU.
+
 - OEM companies supply Tier 1 with the ECU extract.
+
 - Engineers in 
+
   - Tier 1: application developper
   - OEM: network architecture design, integration
   - Tier 2: AUTOSAR stack developer & maintains them.
   - Services: helps OEM in developing the application (source out), or in integration
+
+- This session is prepared from Layered Software Architecture: Document
+
+  
