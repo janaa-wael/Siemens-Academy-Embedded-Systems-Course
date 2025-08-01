@@ -123,4 +123,68 @@
     - non-standardized functionality
     - example: ISOBus
 
-- 
+  ![image-20250801140957575](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801140957575.png)
+
+- APIs are mainly static & they depend on the user configurations.
+
+![image-20250801141943446](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801141943446.png)
+
+- Module: component in any of the AUTOSAR Layers.
+-  Each module has part of the code that is dynamic & static.
+- If SWC1 & 2 are on the same ECU & need to communicate, they communicate through RTE.
+- RTE is the only module that contains dynamic code only. It doesn't contain static code.
+- Flash Driver: has APIs like Fls_Write(ID, Data);
+  we configure blocks in it, RTE calls it in RTE_WriteBlock if needed.
+
+![image-20250801145254849](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801145254849.png)
+
+- Application Layer:
+
+  - The AUTOSAR Application layer is the highest layer within AUTOSAR layered software architecture.
+  - It consists of various set of interconnected SWCs
+  - A SWC is the simplest form of an application that fulfills certain functionality.
+
+- Libraries:
+
+  ![image-20250801145441353](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801145441353.png)
+
+  - Libraries are a collection of functions for related purposes.
+  - They can be called by BSW modules (that including the RTE), SW-Cs, libraries or integration code.
+  - Run in context of the caller.
+  - Example: CRC Library
+
+- Benefits of AUTOSAR:
+
+  - Development can be decoupled (through abstraction) by horizontal layers, reducing development time and costs.
+  - Harware & software - widely independent of each other
+  - Reuse of software enhances quality & efficiency
+
+  ![image-20250801150216225](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801150216225.png)
+
+- RTE is the middleware software layer as all SWCs communicate with it if they need anything.
+
+  ![image-20250801152249001](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801152249001.png)
+
+- BSW Layer Overview
+
+![image-20250801153651347](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801153651347.png)
+
+- PduR: Protocol Data Unit Router
+- CAN by default supports PDUs up to 8 bytes.
+- CanTp: CAN transport protocol, does segmentation of PDUs & is responsible for the reassembly of the PDUs.
+- SWC talks through standardized API to RTE.
+- RTE translates this to signal and forwards it to COM.
+- COM sends PDU to PduR. It has a routing table and sends the PDU to CanTp which is responsible for segmentation and assembles the PDUs into PDUs with maximum size of 8 bytes, then sends them to PduR
+- PduR sends them to CanIf
+
+AUTOSAR Workflow:
+![image-20250801154534392](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250801154534392.png)
+
+- In some cases, OEMs communicate directly with Tier 2 companies & not implement the application layer by themselves.
+- Tier 1: develops the application layer and the ECU.
+- OEM companies supply Tier 1 with the ECU extract.
+- Engineers in 
+  - Tier 1: application developper
+  - OEM: network architecture design, integration
+  - Tier 2: AUTOSAR stack developer & maintains them.
+  - Services: helps OEM in developing the application (source out), or in integration
