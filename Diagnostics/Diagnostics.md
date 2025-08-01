@@ -195,3 +195,101 @@
 - Software Download Example:
 
   ![image-20250726142812682](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726142812682.png)
+
+- Logs of UDS are monitored using CANoe or CAN Analyzer or any spying tool
+
+- ECU Test is any ecu that communicates with the tester tool.
+
+- CAN is a communication protocol while UDS is a message protocol.
+
+- TP constructs the frame and calculates the number of bytes in First Frame.
+
+  ![image-20250726150458709](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726150458709.png)
+
+- Functional Request: request the tester/client wants to send to all ECUs.
+
+- Physical Request: request from tester/client tool sent to a certain ECU.
+
+![image-20250726150857434](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726150857434.png) 
+
+- Programming Session:
+
+  - bootloader executes during the programming session.
+
+- Default Session:
+
+  - application executes during the default session.
+
+- Security Access:
+
+  - steps by tester to grant security access and be able to access the ECU's services.
+
+    ![image-20250726151151749](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726151151749.png)
+
+  - tester sends the seed to the server and the server calculate the key and then the tester sends the key to tester and if it's correct then the server responds that access is granted.
+  - Security Access algorithms is OEM-dependent, depends on the requirement of the customer.
+
+- Single-Level vs Two-Level Bootloader
+
+  ![image-20250726152618352](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726152618352.png)
+
+  - Flash: has primary bootloader whose capabilities are limited (DIDs, secure booting, software download in RAM, can't manipulate the flash)
+  - Secondary Bootloader:
+    - superset of primary bootloader because it contains the flash driver and contains more functionalities thaan the primary bootloader
+    - tester tool connects to the secondary bootloader
+
+- Bootloader Updater (BLU): 
+
+  - We need it to modify the bl software whether single-level or 2-level.
+  - BLU is on the PC and we built it to produce the binary file.
+  - New PBL doesn't relate to the application address, to make it relate to it we need to offset it.
+
+  ![image-20250726160229901](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726160229901.png)
+
+  ![image-20250726160238368](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726160238368.png)
+
+- FOTA (Dual Banking/ Dual Image)
+
+  ![image-20250726162817161](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726162817161.png)
+
+  - Firmware Over The Air
+  - Technology allows us to do wireless updates.
+  - technique used to provide us with some sort of mitigation action
+  - we've 2 memory banks; Bank A & Banl B. Each is independent of the other.
+  - When there's a SW update, we have an active partition (has code running) and inactive (has backup of the updated software)
+  - We switch between them, Bank B becomes actives and A becomes inactive.
+  - We swap between them so that the newer application version run, we don't copy them in sw, swapping occurs in SW.
+
+- Secure Boot:
+
+  ![image-20250726163107882](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726163107882.png)
+
+  - to check the applicaiton confidentiality.
+
+  - Root of Trust: the entity that we trust & verify many things with.
+
+    e.g.: HSM, OTP Memory (because it never changes as it
+
+    s one-time-programmable!)
+
+  - Chain of trust: 
+
+    - HSM verifies the bootloader or boot manager or PBL or application, if qanything in the middle had its verification fail the whole process fails.
+    - After verification finishes, application is verified.
+    - We need verification to check upon the integrity.
+    - HSM: hardware security module that has its own core, sw executes on it using bridge communication to do cryptographic operations on it and after it finishes the control returns back to the host core.
+    - Bootloader used HSM.
+
+- Data Encryption & Decryption
+
+  ![image-20250726163316915](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726163316915.png)
+
+- CMAC:
+  - Cipher-based Message Authentication Code
+
+- Signature Verification: (Tester Tool, ECU)
+
+![image-20250726163508515](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250726163508515.png)
+
+- Software Download Example:
+  - 
