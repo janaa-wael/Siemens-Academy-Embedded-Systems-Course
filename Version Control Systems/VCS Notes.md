@@ -268,3 +268,60 @@ This command is your magnifying glass. It shows you the **line-by-line differenc
 ![image-20250914222944536](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250914222944536.png)
 
 ![image-20250914230637424](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250914230637424.png)
+
+![image-20250914233050528](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250914233050528.png)
+
+--------------
+
+
+
+![image-20250914235538029](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250914235538029.png) 
+
+![image-20250915023809881](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915023809881.png)
+
+![image-20250915023812304](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915023812304.png)
+
+| Command                    | Purpose & Explanation                                        | Effect on Diagram                                            |
+| :------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| `git branch <name>`        | **Create a new branch.** This command creates a new pointer that points to the **current commit**. It does *not* automatically switch you to it. | A new dashed pointer (`new branch`) is created, pointing to the same commit as `main`. |
+| `git branch <name> <id>`   | **Create a branch from a past commit.** This is useful for starting a new fix or feature from a known, stable point in history. | A new pointer is created, pointing to an older commit in the history chain. |
+| `git branch`               | **List all branches.** Shows the names of all local branches. The current active branch will be highlighted, often with an asterisk `*`. | This command just lists the pointers (e.g., `main`, `new branch`) but doesn't change them. |
+| `git checkout <branch>`    | **Switch to an existing branch.** This updates your **working directory** to match the state of the specified branch. You can only do this if your working directory is clean (no uncommitted changes). | The `HEAD` reference (not shown) moves from `main` to point to `new branch`. Subsequent commits will now move the `new branch` pointer forward. |
+| `git checkout -b <branch>` | **Create a new branch and switch to it immediately.** This is the most common way to start working on something new. It combines `git branch <name>` and `git checkout <name>` into one command. | Creates the new dashed pointer **and** immediately points `HEAD` to it. |
+| `git branch -d <branch>`   | **Delete a branch.** You can only delete a branch if its changes have been fully merged into another branch. This safely removes the pointer. | The dashed pointer (`new branch`) is removed from the diagram. The commits remain until garbage collected. |
+
+-------------------------------------
+
+- ### Merging:
+
+![image-20250915035807954](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915035807954.png)
+
+![image-20250915050130061](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915050130061.png)
+
+#### The Merge Command
+
+- **`git merge <branch>`**
+  - **Purpose:** Integrates changes from the specified `<branch>` **into the current, checked-out branch**. You must first `checkout` the branch you want to merge *into* (e.g., `main` or `development`).
+  - **How it works:** Git compares the history of both branches and combines their changes using one of two methods.
+
+#### 2. Types of Merges
+
+Git automatically chooses the best merge strategy based on the branch histories.
+
+| Type                   | What Happens                                                 | Visual Example (Before -> After)                             | When It Occurs                                               |
+| :--------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| **Fast-Forward Merge** | If the target branch hasn't diverged, Git simply **moves the pointer** forward along the same line of history. No new commit is created. | `main: C1` <- `feature: C2---C3` -> **`main: C3`**           | This is possible when the current branch is a direct ancestor of the branch you're merging in. |
+| **3-Way Merge**        | If both branches have new commits and their histories have **diverged**, Git creates a **new "merge commit"** that has two parents. This snapshots the combination of both branches. | `main: C1---C4` `feature: C2---C3` -> `main: C1---C4---M5` `feature: C2---C3-/` | This is necessary when both branches have new commits that the other doesn't have. |
+
+#### 3. Conflict Resolution
+
+A **merge conflict** occurs when Git cannot automatically combine changes because both branches modified the same part of the same file.
+
+- **What causes it?** For example, if you change a function's name on a `feature` branch and another developer changes the same function's body on the `main` branch, Git doesn't know which change to keep.
+- **The Resolution Process:**
+  1. **Edit conflicting files:** Git will mark the conflicting sections in the file. You must open the file, manually choose which changes to keep (or combine them), and **remove the conflict markers** (`<<<<<<<`, `=======`, `>>>>>>>`).
+  2. **`git add <file>`:** After resolving the conflict in a file, you must `add` it to the staging area. This tells Git, "The conflict in this file is resolved."
+  3. **`git commit`:** Finally, you complete the merge process by committing the resolution. Git will automatically provide a commit message for the merge commit.
+
+---------------------------------------------------------
+
