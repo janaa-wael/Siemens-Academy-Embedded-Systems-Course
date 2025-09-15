@@ -325,3 +325,97 @@ A **merge conflict** occurs when Git cannot automatically combine changes becaus
 
 ---------------------------------------------------------
 
+![image-20250915135242085](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915135242085.png)
+
+----------------------------
+
+![image-20250915141341973](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915141341973.png)
+
+#### Core Concept: Pointer to a Commit
+
+Both branches and tags are pointers that reference a specific commit in your repository's history. The key difference is **what happens to that pointer over time**.
+
+#### 1. Branch: The Moving Pointer (For Development)
+
+- **What it is:** A **movable pointer** that always points to the **tip** (the latest commit) of a line of development.
+- **Behavior:** When you make a new commit on a branch, the branch pointer **automatically moves forward** to that new commit. It's designed to track ongoing progress.
+- **Analogy:** A branch is like a **growing tree limb**. It starts somewhere and continues to grow as you add new commits.
+- **Purpose:** Used for **active, ongoing work**.
+  - Isolating new features (`feature/login-form`)
+  - Fixing bugs (`bugfix/header-issue`)
+  - Experiments (`experiment/new-algorithm`)
+
+#### 2. Tag: The Fixed Pointer (For Releases)
+
+- **What it is:** A **static, fixed pointer** to a specific, exact commit. It's a bookmark in your history.
+- **Behavior:** Once created, a tag **does not move**. It will always point to the same commit, forever. It captures a snapshot of the project at a specific point in time.
+- **Analogy:** A tag is like a **timestamped version number in a photo album**. It permanently marks a specific moment.
+- **Purpose:** Used to **mark significant milestones** for future reference.
+  - Software releases (`v1.0.0`, `v2.1.3`)
+  - Code review points (`reviewed-by-qa`)
+  - Any important historical state
+
+------
+
+![image-20250915145356238](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915145356238.png)
+
+### Command Breakdown (`git tag`)
+
+| Command                         | Purpose & Explanation                                        |
+| :------------------------------ | :----------------------------------------------------------- |
+| `git tag`                       | **List all tags** in the repository.                         |
+| `git tag -a <name>`             | **Create an annotated tag** on the **latest commit**. The `-a` flag opens your editor to add a descriptive message (highly recommended for important tags). |
+| `git tag -a <name> <commit-id>` | **Create an annotated tag** on a **specific past commit**. You need the first 7+ characters of the commit hash. |
+| `git tag -d <name>`             | **Delete a tag** from your local repository.                 |
+
+-----------------------------------------
+
+#### Core Concept: What is Stashing?
+
+- **The Problem:** You are in the middle of working on a feature (`feature/login`) and your code is in a messy, uncommitted state. Suddenly, you need to quickly switch to another branch (e.g., `main`) to fix a critical bug. You can't switch branches because Git will force you to either commit or discard your current changes.
+- **The Solution:** `git stash`
+- **Definition:** Stashing **temporarily shelves** (or saves) all your **uncommitted changes** (both files that are staged *and* files that are just modified) into a special, hidden stack. This returns your working directory to the state of the last commit, allowing you to switch branches freely. You can then re-apply those changes later.
+
+#### The Stash Stack
+
+The slide shows a stack ("Staged Snapshot", "1", "2", "3", "4"). This illustrates that you can have **multiple stashes**. Each time you run `git stash`, your current changes are pushed onto the top of this stack.
+
+------
+
+### Command Breakdown
+
+| Command                           | Purpose & Explanation                                        |
+| :-------------------------------- | :----------------------------------------------------------- |
+| `git stash` (or `git stash push`) | **Save changes to a new stash.** This is the primary command. It takes all modified and staged files, saves them away, and cleans your working directory, making it match the latest commit. It's like a temporary commit. |
+| `git stash list`                  | **View your stash stack.** Shows you a list of all your saved stashes. They will be named `stash@{0}`, `stash@{1}`, etc., where `stash@{0}` is the most recent one. *(This command is implied by the stack visual but not explicitly written on the slide).* |
+| `git stash apply`                 | **Re-apply a stash.** This reapplies the changes from the most recent stash (`stash@{0}`) **back to your working directory**. The crucial part is that **the stash remains in your stack** in case you want to apply it again elsewhere. |
+| `git stash pop`                   | **Apply and remove a stash.** This is the most common command after stashing. It does two things: 1) reapplies the most recent stash, and 2) **deletes it** from the stash stack. Use this when you are done with that set of changes. |
+
+----------------------------
+
+![image-20250915145631513](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915145631513.png)
+
+![image-20250915150314259](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915150314259.png)
+
+![image-20250915150359232](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915150359232.png)
+
+![image-20250915151315449](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915151315449.png)
+
+![image-20250915151714260](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250915151714260.png)
+
+#### Core Concept of GitHub Flow
+
+GitHub Flow is a branch-centric workflow that emphasizes **short-lived branches**, **continuous integration**, and **frequent deployments**. The main goal is to get changes into the main branch (`master` or `main`) quickly and safely.
+
+#### How It Works (Step-by-Step)
+
+The diagram shows a central `master` branch with multiple `feature branches` branching off and then merging back in. Here's the typical process:
+
+1. **Start with `master`:** The `master` branch is always deployable and represents the current production state. It is sacred and must always be stable.
+2. **Create a Feature Branch:** For every new feature, bug fix, or experiment, a developer creates a new branch **from `master`**. This isolates their work.
+   - `git checkout -b my-feature-branch`
+3. **Work on the Branch:** The developer makes commits on this branch regularly.
+4. **Open a Pull Request (PR):** This is the most critical step. When the work is ready (even if it's not 100% finished), the developer opens a Pull Request. This initiates a **code review** and discussion with teammates. The PR acts as a quality gate and a communication hub.
+5. **Review and Automated Testing:** The team reviews the code. Meanwhile, **automated tests** (e.g., CI pipelines in Jenkins, GitHub Actions) run on the branch to ensure it doesn't break anything.
+6. **Merge to `master`:** Once the code is approved and all tests pass, the feature branch is **merged directly into `master`**. This is shown in the diagram by the feature branches merging back into the main line.
+7. **Deploy Immediately:** After merging, the changes are **deployed to production immediately** (or with very little delay). This allows for continuous delivery.
