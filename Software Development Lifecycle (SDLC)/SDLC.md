@@ -303,3 +303,103 @@ Coding & Development Practices:
 ---------------------------------------------
 
 ![image-20250916164632136](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916164632136.png)
+
+![image-20250916185656643](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916185656643.png)
+
+![image-20250916190755975](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916190755975.png)
+
+**Unit Testing (The Foundation)**
+
+- **What it is:** Testing the smallest possible pieces of code, like individual functions or classes, in complete isolation.
+- **Purpose:** To verify that each building block works correctly on its own. If a unit test fails, you know exactly which function has a bug.
+- **Key Term: Isolation.** Dependencies (like other modules, databases, networks) are replaced with fake implementations called **mocks** or **stubs**.
+
+**Module-Level Testing (Requirement-Based Testing)**
+
+- **What it is:** Testing a whole module (a group of related units) against its formal requirements.
+- **Purpose:** To ensure the module as a whole does what it's *specified* to do. The tests are directly derived from the requirement documents (e.g., `SWS_Os_00424` shall do X).
+- **Key Term: Validation.** This is about validating specifications.
+
+**Integration Testing (Feature-Level Testing)**
+
+- **What it is:** Testing how multiple different modules work together.
+- **Purpose:** To expose flaws in the interactions between integrated units. This is where you find issues like incorrect data sharing, API mismatches, and timing problems.
+- **Key Term: Interaction.** This test level verifies that combined parts of the system function correctly as a group to deliver a feature.
+
+#### 2. Documents: The Blueprint and Record
+
+A formal testing process requires documentation to ensure consistency, traceability, and accountability.
+
+- **Testing Specification:** This is the **plan**. It's written *before* testing begins. It defines:
+  - **What** to test (e.g., "Requirement SWS_Os_00424").
+  - **How** to test it (step-by-step procedures, input values, expected results).
+  - **The environment** needed (e.g., specific hardware, software versions).
+- **Test Report:** This is the **record**. It's generated *after* tests are executed. It contains:
+  - **Results** (Pass/Fail).
+  - **Evidence** of test execution (logs, screenshots).
+  - **Analysis** of failures and links to any bug reports filed.
+
+#### 3. Tools: Automating the Process
+
+The slide mentions specific tools that automate testing and management, which is essential for efficiency, especially in large projects.
+
+- **Google Test (C/C++) & JUnit (Java):** These are **frameworks for writing and running unit tests**. They allow developers to:
+  - Write test cases in the same language as their code.
+  - Automatically execute a whole suite of tests with a single command.
+  - Generate clear reports showing which tests passed or failed.
+- **TestLink:** This is a **web-based test management tool**. It's used for:
+  - Storing and organizing test cases (Test Specifications).
+  - Planning test cycles (what to test when).
+  - Tracking test execution results and generating Test Reports.
+  - Managing team collaboration around testing.
+
+-----------------------------------
+
+![image-20250916192153158](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916192153158.png)
+
+![image-20250916192542718](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916192542718.png)
+
+![image-20250916192641762](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916192641762.png)
+
+![image-20250916194943766](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916194943766.png)
+
+--------------------------
+
+![image-20250916195236226](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916195236226.png)
+
+------------------------
+
+![image-20250916195342505](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916195342505.png)
+
+------------------------------
+
+![image-20250916195510190](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916195510190.png)
+
+![image-20250916200310188](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916200310188.png)
+
+![image-20250916200322822](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916200322822.png)
+
+![image-20250916200855826](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916200855826.png)
+      
+
+      ```yaml
+    name: C CI v1
+    on: [push, pull_request]
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          # Step 1: Checkout repository
+          - name: Checkout code
+            uses: actions/checkout@v3
+    # Step 2: Install build tools (GCC, Make, etc.)
+      - name: Install GCC
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+      
+      # Step 3: Compile main.c
+      - name: Build
+        run: gcc -o test main.c
+      
+      # Step 4: Run tests
+      - name: Run Tests
+        run: ./test
