@@ -159,9 +159,147 @@ The `Runner` can call methods defined by the `IMain` interface. At runtime, we *
 This makes the system:
 
 - **Decoupled:** `Runner` and `ConcreteMain` can be developed and changed independently.
+
 - **Testable:** You can test `Runner` by injecting a *mock* or *fake* object that implements `IMain`.
+
 - **Flexible:** You can easily swap out `ConcreteMain` for a different implementation (e.g., `TestMain`, `DifferentOSMain`) without changing the `Runner` code.
+
+  
 
 ![image-20250916133600497](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916133600497.png)
 
+------------------------------------
+
 ![image-20250916134927401](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916134927401.png)
+
+**How the Solution Works:**
+
+The key is in `fileB.h`. It uses a **forward declaration** instead of including `fileA.h`.
+
+- **Line 6 (Old):** `#include "fileA.h"` // This caused the problem
+- **Line 6 (New):** `typedef struct AType AType;` // This is the forward declaration
+
+**What is a Forward Declaration?**
+It's a promise to the compiler. It says: *"There is a struct called `AType` that will be defined somewhere else. For now, just accept that the name `AType` is a valid type."*
+
+**Why does this work?**
+Because `fileB.h` only uses a **pointer** to `AType` (`AType* a;`). The compiler doesn't need to know the full definition of `AType` (like its size or what members it has) to work with a pointer to it. It just needs to know that the type exists.
+
+**The Fixed Workflow:**
+
+1. **`fileA.h`** includes `fileB.h` (as before) to get the full definition of `BType` for the member `BType b;`.
+2. **`fileB.h`** does NOT include `fileA.h`. Instead, it forward declares `AType`. This breaks the circular include loop.
+3. When the compiler processes `fileB.h`, it sees `AType* a;` and knows that `AType*` is a pointer to a struct. This is perfectly valid with just the forward declaration.
+4. Later, when `fileA.h` is compiled, the full definition of `AType` is provided, satisfying the earlier promise.
+
+-------------------------------------------------------
+
+
+
+![image-20250916143552189](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916143552189.png)
+
+#### 1. High-Level Logical Concepts (The "What")
+
+These are abstract ways to group and think about functionality. They are independent of programming language.
+
+- **Module:**
+  - **What it is:** The largest unit of organization. A module is a collection of related code that performs a **major, distinct function** within the application.
+  - **Analogy:** In a car, modules would be the **Engine**, the **Transmission**, the **Braking System**.
+  - **Example:** In a web app, you might have an `AuthenticationModule`, a `PaymentModule`, and a `ReportingModule`.
+- **Component:**
+  - **What it is:** A smaller, reusable building block *within a module*. A component is a self-contained unit that encapsulates a specific piece of behavior or UI and has a well-defined interface.
+  - **Analogy:** Within the Braking System module, components would be the **Brake Caliper**, the **Master Cylinder**, and the **ABS Sensor**.
+  - **Example:** In a UI framework like React, a `Button`, a `ModalDialog`, or a `NavBar` are all components. In backend code, a `DatabaseConnector` or `Logger` could be a component.
+- **Feature:**
+  - **What it is:** This organizes code around a **user-facing capability** or a business requirement. A feature often cuts across multiple modules and components to deliver a complete piece of value to the user.
+  - **Analogy:** The feature "Cruise Control" uses components from the Engine module (throttle control), the Braking module (to disengage), and the UI module (buttons on the steering wheel).
+  - **Example:** A "User Profile" feature would involve the `AuthenticationModule` (for login), a `DatabaseModule` (to fetch user data), and several UI `Components` (forms, avatars, buttons).
+
+#### 2. Low-Level Physical Organization (The "How")
+
+This is how the logical concepts are actually implemented in the project's files and folders.
+
+- **Folder Structure (Directory Layout):**
+  - **What it is:** This is the high-level organization of the project's source code on the filesystem. It's the first thing you see when you open the project.
+  - **How it maps:** The folder structure is how you choose to represent your **Modules** and **Features**.
+  - **Common Patterns:**
+    - **By Module:** `/src/AuthenticationModule`, `/src/PaymentModule`
+    - **By Feature:** `/src/user-profile`, `/src/checkout-cart`
+    - **By Layer:** `/src/models`, `/src/views`, `/src/controllers` (MVC pattern)
+  - **Purpose:** A good folder structure makes the codebase **navigable and intuitive**. You should be able to guess where to find code for a specific functionality.
+- **File Structure:**
+  - **What it is:** This refers to the organization of code **within a single file**. It includes things like:
+    - The order of imports/includes.
+    - The placement of classes, functions, and constants.
+    - The use of comments and documentation.
+    - Adhering to a consistent style guide (e.g., naming conventions: `PascalCase` for classes, `camelCase` for variables).
+  - **Purpose:** A consistent file structure makes individual files **readable and maintainable**. It allows any developer on the team to quickly understand a file's content
+
+----------------------------------
+
+Coding & Development Practices:
+![image-20250916143847634](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916143847634.png)
+
+![image-20250916162224772](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916162224772.png)
+
+#### 1. Adherence to Standards: AUTOSAR
+
+- **`Write your src code according to the AUTOSAR...`**
+  - **What it means:** This is a non-negotiable requirement. AUTOSAR (AUTomotive Open System ARchitecture) is a global standard that defines how software for Electronic Control Units (ECUs) in cars is designed, written, and integrated.
+  - **The Documents:**
+    - **`AUTOSAR_SWS_BSWGeneral.pdf`** (Software Specification): This document defines the *how*. It's the detailed technical specification for implementing the Basic Software (BSW) modules. It specifies function names, parameters, behavior, and APIs. **Developers code against this document.**
+    - **`AUTOSAR_SRS_BSWGeneral.pdf`** (System Requirements Specification): This document defines the *what*. It states the high-level requirements that the software must fulfill. **Testers validate against this document.**
+  - **Why it's important:** Following the standard ensures that software from different teams and different companies will work together correctly. It ensures reliability, safety, and interoperability in a complex supply chain.
+
+#### 2. Naming Conventions: Consistency is Key
+
+- **`Define the naming convention`**
+  - **What it means:** A strict naming convention is enforced for every element in the code. This is not a suggestion; it's a rule.
+  - **The Pattern:** The pattern `[Module]_[Component][Name]_[Suffix]` is prescribed.
+    - **`Os_` Prefix:** "Os" stands for Operating System. This indicates that these examples are for the OS module. Other modules would have their own prefix (e.g., `Com_` for Communication, `EcuM_` for ECU Management).
+    - **`<ComponentName>`:** Specifies the sub-module or component within the OS (e.g., `Os_Task_` for task-related functions, `Os_Resource_` for resource management).
+    - **Casing:** Functions and variables use `CamelCase`, Macros use `UPPER_CASE`, and Types use a `_Type` suffix.
+  - **Why it's important:**
+    - **Readability:** Just by looking at a name, you know what module it belongs to and what kind of element it is (function, macro, type).
+    - **Avoids Conflicts:** Prevents name clashes in a large codebase with many contributors.
+    - **Tooling:** Makes it easier to write scripts and tools that automatically analyze the code.
+
+#### 3. Automated Documentation: Doxygen
+
+- **`Write the API specification and extract it using... Doxygen`**
+
+  - **What it means:** Developers don't just write code; they write **API documentation directly in the code** as special comments. A tool called **Doxygen** then scans the source code and automatically generates professional documentation (e.g., in HTML or PDF format) from those comments.
+
+  - **How it works:** Developers use special comment tags like `@brief`, `@param`, `@return`.
+
+    c
+
+    ```
+    /**
+    * @brief Starts a specific operating system task.
+    * @param[in] TaskId The unique identifier of the task to start.
+    * @return Os_StatusType Returns OS_OK if successful, OS_ERROR otherwise.
+    */
+    Os_StatusType Os_TaskStart(Os_TaskType TaskId);
+    ```
+
+    
+
+  - **Why it's important:**
+
+    - **The documentation is always in sync with the code** because it lives right next to it.
+    - It saves immense time and effort compared to manually writing and maintaining separate documents.
+    - It provides a single source of truth for how to use the API.
+
+#### 4. Build Automation: Make
+
+- **`make is a build automation tool...`**
+  - **What it means:** The `make` tool reads a configuration file (usually called `Makefile`) that defines the rules for compiling source files, linking object files, and producing the final executable. It automatically figures out what needs to be recompiled based on what files have changed, which is essential for large projects.
+  - **Why it's important:**
+    - **Automation:** Eliminates the error-prone process of manually typing long compilation commands.
+    - **Efficiency:** Only rebuilds what is necessary, saving a huge amount of time.
+    - **Reproducibility:** Ensures that every developer builds the software in exactly the same way.
+
+---------------------------------------------
+
+![image-20250916164632136](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20250916164632136.png)
